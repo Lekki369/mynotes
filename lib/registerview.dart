@@ -30,53 +30,35 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.app_registration_outlined, size: 40),
-        onPressed: () async {
-          final password = _passcode;
-          final email = _email;
-
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              email: email.text, password: password.text);
-        },
-      ),
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text('Register'),
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration:
-                          const InputDecoration(hintText: 'Email-Address'),
-                    ),
-                    TextField(
-                      keyboardType: TextInputType.visiblePassword,
-                      controller: _passcode,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        hintText: 'Password',
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            default:
-              return const Text('Loading');
-          }
-        },
+      body: Column(
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(hintText: 'Email-Address'),
+          ),
+          TextField(
+            keyboardType: TextInputType.visiblePassword,
+            controller: _passcode,
+            obscureText: true,
+            decoration: const InputDecoration(
+              hintText: 'Password',
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final password = _passcode;
+              final email = _email;
+
+              await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  email: email.text, password: password.text);
+            },
+            child: const Text('Register Now'),
+          ),
+        ],
       ),
     );
   }

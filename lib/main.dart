@@ -1,23 +1,28 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/email_verfication.dart';
 import 'package:mynotes/registerview.dart';
-import 'package:mynotes/views/loginView.dart';
+
+import 'package:mynotes/views/loginview.dart';
 
 import 'firebase_options.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const Register(),
+      },
       home: const HomePage(),
     ),
   );
-
-  WidgetsFlutterBinding.ensureInitialized();
 }
 
 class HomePage extends StatelessWidget {
@@ -25,31 +30,32 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('HomePage'),
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              final currentUser = (FirebaseAuth.instance.currentUser);
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            final currentUser = (FirebaseAuth.instance.currentUser);
+            print(currentUser);
 
-              if (currentUser?.emailVerified ?? false) {
-                print('You\'re Verified');
+            if (currentUser != null) {
+              if (currentUser.emailVerified) {
+                print('Email Verified');
               } else {
-                print('You\'re not Verified');
+                return const EmailVerfy();
               }
-              return const Text('Done Loading');
-
-            default:
-              return const Text(' Unknown Loading');
-          }
-        },
-      ),
+            } else {
+              return const LoginView();
+            }
+            return const Text('Done');
+          default:
+            return const Scaffold(
+              body: CircularProgressIndicator(),
+            );
+        }
+      },
     );
   }
 }
