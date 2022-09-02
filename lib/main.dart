@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/email_verfication.dart';
+import 'package:mynotes/notes_view.dart';
 import 'package:mynotes/registerview.dart';
+import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/views/loginview.dart';
 
@@ -25,9 +27,14 @@ void main() {
   );
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -38,18 +45,21 @@ class HomePage extends StatelessWidget {
         switch (snapshot.connectionState) {
           case ConnectionState.done:
             final currentUser = (FirebaseAuth.instance.currentUser);
-            print(currentUser);
+            devtools.log(currentUser.toString());
+            //   print(currentUser);
 
             if (currentUser != null) {
               if (currentUser.emailVerified) {
-                print('Email Verified');
+                devtools.log('Email Verified');
+
+                return const NoteView();
               } else {
                 return const EmailVerfy();
               }
             } else {
               return const LoginView();
             }
-            return const Text('Done');
+
           default:
             return const Scaffold(
               body: CircularProgressIndicator(),
